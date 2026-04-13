@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>MailMate App</title>
+<title>MailMate</title>
 <meta name="theme-color" content="#0d0d0d">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="description" content="MailMate - AI e-mail assistent in jouw stijl">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -23,34 +23,54 @@
 }
 html,body{height:100%;overflow:hidden}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;display:flex;flex-direction:column}
+
+/* SCREENS */
 .screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(72px + var(--safe-bottom))}
 .screen.active{display:flex;flex-direction:column}
-@keyframes sf{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.sf{animation:sf .22s ease-out}
+@keyframes sf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
 /* AUTH */
-#screen-auth{background:var(--ink);justify-content:center;align-items:center;padding:40px 28px;padding-top:calc(40px + var(--safe-top))}
-.auth-logo{font-family:var(--serif);font-size:44px;font-weight:300;color:var(--paper);text-align:center;margin-bottom:4px}
+#screen-auth{background:var(--ink);justify-content:center;align-items:center;padding:32px 24px;padding-top:calc(32px + var(--safe-top));overflow-y:auto}
+.auth-logo{font-family:var(--serif);font-size:48px;font-weight:300;color:var(--paper);text-align:center;margin-bottom:4px}
 .auth-logo em{font-style:italic;color:var(--gold2)}
-.auth-tagline{font-size:13px;color:rgba(255,255,255,0.3);text-align:center;margin-bottom:44px}
-.auth-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);padding:32px 24px;width:100%;max-width:360px}
-.auth-tabs{display:flex;margin-bottom:22px;border:1px solid rgba(255,255,255,0.08)}
-.at{flex:1;padding:9px;font-size:13px;font-weight:500;background:transparent;color:rgba(255,255,255,0.35);border:none;cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.auth-sub{font-size:13px;color:rgba(255,255,255,0.3);text-align:center;margin-bottom:40px}
+.auth-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);padding:28px 24px;width:100%;max-width:360px}
+.auth-tabs{display:flex;margin-bottom:20px;border:1px solid rgba(255,255,255,0.08)}
+.at{flex:1;padding:10px;font-size:13px;font-weight:500;background:transparent;color:rgba(255,255,255,0.3);border:none;cursor:pointer;transition:all .2s;font-family:var(--sans)}
 .at.active{background:var(--gold);color:var(--ink)}
 .fi{margin-bottom:12px}
-.fi label{display:block;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:6px}
-.fi input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--paper);font-family:var(--sans);font-size:14px;padding:11px 13px}
+.fi label{display:block;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:6px}
+.fi input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--paper);font-family:var(--sans);font-size:14px;padding:11px 13px;transition:border-color .2s}
 .fi input:focus{outline:none;border-color:var(--gold)}
 .fi input::placeholder{color:rgba(255,255,255,0.18)}
 .btn-auth{width:100%;padding:13px;background:var(--gold);color:var(--ink);font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:0.06em;border:none;cursor:pointer;margin-top:6px;transition:all .2s}
 .btn-auth:hover{background:var(--gold2)}
-.auth-msg{font-size:12px;text-align:center;margin-top:9px;min-height:16px}
+.auth-msg{font-size:12px;text-align:center;margin-top:9px;min-height:16px;line-height:1.6}
 .auth-msg.err{color:#e74c3c}.auth-msg.ok{color:#2ecc71}
-.auth-switch{font-size:12px;color:rgba(255,255,255,0.25);text-align:center;margin-top:14px}
-.auth-switch a{color:var(--gold2);cursor:pointer}
+
+/* ONBOARDING */
+#screen-onboard{background:var(--ink);justify-content:center;align-items:center;padding:32px 24px;padding-top:calc(32px + var(--safe-top));overflow-y:auto}
+.ob-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);padding:28px 24px;width:100%;max-width:360px}
+.ob-step{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.ob-title{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--paper);margin-bottom:8px}
+.ob-desc{font-size:13px;color:rgba(255,255,255,0.4);font-weight:300;line-height:1.65;margin-bottom:20px}
+.ob-input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--paper);font-family:var(--sans);font-size:14px;padding:11px 13px;margin-bottom:10px;transition:border-color .2s}
+.ob-input:focus{outline:none;border-color:var(--gold)}
+.ob-input::placeholder{color:rgba(255,255,255,0.18)}
+.ob-ta{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--paper);font-family:var(--sans);font-size:13px;padding:11px 13px;resize:none;min-height:120px;line-height:1.65;font-weight:300;margin-bottom:10px;transition:border-color .2s}
+.ob-ta:focus{outline:none;border-color:var(--gold)}
+.ob-ta::placeholder{color:rgba(255,255,255,0.18)}
+.ob-toon-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.ob-toon{padding:12px 8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);font-size:12px;font-weight:500;cursor:pointer;text-align:center;transition:all .2s;font-family:var(--sans)}
+.ob-toon.active{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.ob-skip{font-size:12px;color:rgba(255,255,255,0.2);text-align:center;cursor:pointer;padding-top:8px;display:block}
+.ob-skip:hover{color:rgba(255,255,255,0.5)}
+.ob-progress{display:flex;gap:5px;justify-content:center;margin-bottom:24px}
+.ob-dot{width:24px;height:3px;background:rgba(255,255,255,0.1);transition:background .3s}
+.ob-dot.active{background:var(--gold)}
 
 /* TOPBAR */
-.topbar{position:sticky;top:0;z-index:50;background:rgba(248,246,241,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:calc(10px + var(--safe-top)) 18px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(248,246,241,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:calc(10px + var(--safe-top)) 18px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .tl-logo{font-family:var(--serif);font-size:20px;font-weight:400;display:flex;align-items:center;gap:8px}
 .lm{width:28px;height:28px;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;border-radius:2px;font-family:var(--serif)}
 .tl-right{display:flex;align-items:center;gap:8px}
@@ -83,8 +103,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .mail-box textarea:focus{outline:none}
 .mail-box textarea::placeholder{color:rgba(107,101,96,0.45)}
 .opts-row{display:flex;gap:7px;margin-bottom:13px;flex-wrap:wrap}
-.ob{padding:6px 11px;font-size:12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:var(--sans)}
-.ob.active{border-color:var(--gold);color:var(--gold);background:var(--gold-pale)}
+.ob2{padding:6px 11px;font-size:12px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:var(--sans)}
+.ob2.active{border-color:var(--gold);color:var(--gold);background:var(--gold-pale)}
 .btn-go{width:100%;padding:13px;background:var(--ink);color:var(--paper);font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:0.05em;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-go:hover{background:var(--gold)}
 .btn-go:disabled{background:var(--cream);color:var(--muted);cursor:not-allowed}
@@ -109,7 +129,9 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .refine-row{display:flex;gap:7px;padding:11px 14px;border-top:1px solid var(--border);background:var(--cream)}
 .ri{flex:1;background:var(--white);border:1px solid var(--border);font-family:var(--sans);font-size:13px;padding:9px 12px;color:var(--ink)}
 .ri:focus{outline:none;border-color:var(--gold)}
-.btn-rf{padding:9px 14px;background:var(--ink);color:var(--paper);font-size:12px;font-weight:500;border:none;cursor:pointer;font-family:var(--sans);white-space:nowrap}
+.ri::placeholder{color:var(--muted)}
+.btn-rf{padding:9px 14px;background:var(--ink);color:var(--paper);font-size:12px;font-weight:500;border:none;cursor:pointer;font-family:var(--sans);transition:all .2s;white-space:nowrap}
+.btn-rf:hover{background:var(--gold)}
 
 /* HISTORY */
 .hlist{padding:16px;display:flex;flex-direction:column;gap:9px}
@@ -129,7 +151,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .sarr{color:var(--border);font-size:16px}
 .sbadge{background:var(--gold-pale);color:var(--gold);font-size:10px;font-weight:600;padding:2px 7px}
 
-/* KENNISBANK */
+/* KENNIS */
 .karea{padding:16px;display:flex;flex-direction:column;gap:12px}
 .kbox{background:var(--white);border:1px solid var(--border);padding:14px}
 .kbox label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px}
@@ -151,11 +173,6 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .wn{width:22px;height:22px;background:var(--gold-pale);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;border-radius:50%}
 .wt{font-size:13px;color:var(--ink);font-weight:300;line-height:1.55}
 
-/* EMPTY STATE */
-.empty{text-align:center;padding:52px 20px;color:var(--muted)}
-.empty h3{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--ink);margin-bottom:7px}
-.empty p{font-size:13px;font-weight:300;line-height:1.7}
-
 /* CREDITS */
 .clist{padding:16px;display:flex;flex-direction:column;gap:9px}
 .cplan{border:1px solid var(--border);padding:18px;cursor:pointer;transition:all .2s;display:flex;justify-content:space-between;align-items:center;background:var(--white)}
@@ -168,8 +185,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .cprice{font-family:var(--serif);font-size:28px;font-weight:300}
 .cplan.feat .cprice{color:var(--paper)}
 
+/* EMPTY STATE */
+.empty{text-align:center;padding:52px 20px;color:var(--muted)}
+.empty h3{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--ink);margin-bottom:7px}
+.empty p{font-size:13px;font-weight:300;line-height:1.7}
+
 /* LOADING */
-.ldg{position:fixed;inset:0;background:rgba(248,246,241,0.92);backdrop-filter:blur(4px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.ldg{position:fixed;inset:0;background:rgba(248,246,241,0.94);backdrop-filter:blur(4px);z-index:200;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
 .ldg.show{display:flex}
 .spinner{width:34px;height:34px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -211,6 +233,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
   .main-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden}
   .bnav{display:none}
   .screen{max-width:none}
+  #screen-auth,#screen-onboard{flex-direction:row}
 }
 @media(max-width:1023px){
   .sidebar{display:none!important}
@@ -223,53 +246,62 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 
 <div class="ldg" id="ldg"><div class="spinner"></div><div class="ldg-t">MailMate</div><div class="ldg-s" id="ldg-s">Laden...</div></div>
 <div class="toast" id="toast"></div>
-<div class="moverlay" id="moverlay" onclick="closeMod()"><div class="modal" id="modal" onclick="event.stopPropagation()"><button class="mcls" onclick="closeMod()">×</button><div id="mbody"></div></div></div>
+<div class="moverlay" id="moverlay" onclick="closeMod()"><div class="modal" id="modal" onclick="event.stopPropagation()"><button class="mcls" onclick="closeMod()">x</button><div id="mbody"></div></div></div>
 
 <!-- AUTH -->
 <div class="screen active" id="screen-auth">
   <div class="auth-logo">Mail<em>Mate</em></div>
-  <div class="auth-tagline">AI e-mail assistent in jouw stijl</div>
+  <div class="auth-sub">AI e-mail assistent in jouw stijl</div>
   <div class="auth-card">
     <div class="auth-tabs">
       <button class="at active" id="tab-btn-login" onclick="swAuthTab('login')">Inloggen</button>
       <button class="at" id="tab-btn-reg" onclick="swAuthTab('reg')">Aanmelden</button>
     </div>
-
-    <!-- INLOGGEN MET CODE -->
     <div id="tab-login">
-      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:20px;font-weight:300;line-height:1.65">Voer je persoonlijke toegangscode in. Je hebt deze ontvangen na goedkeuring.</p>
-      <div class="fi"><label>Toegangscode</label><input type="text" id="login-code" placeholder="mm_xxxxxxxxxxxx" autocomplete="off" style="letter-spacing:0.04em"></div>
-      <button class="btn-auth" onclick="doCodeLogin()">Inloggen &rarr;</button>
+      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:18px;font-weight:300;line-height:1.65">Voer je persoonlijke toegangscode in.</p>
+      <div class="fi"><label>Toegangscode</label><input type="text" id="login-code" placeholder="mm_xxxxxxxxxxxx" autocomplete="off"></div>
+      <button class="btn-auth" onclick="doCodeLogin()">Inloggen</button>
       <div class="auth-msg" id="login-msg"></div>
-      <p style="font-size:11px;color:rgba(255,255,255,0.15);text-align:center;margin-top:12px">Nog geen account? Klik op Aanmelden.</p>
     </div>
-
-    <!-- AANMELDEN -->
     <div id="tab-reg" style="display:none">
-      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:20px;font-weight:300;line-height:1.65">Maak een account aan. Je ontvangt je toegangscode zodra je aanvraag is goedgekeurd.</p>
+      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:18px;font-weight:300;line-height:1.65">Maak een account aan. Je ontvangt je toegangscode na goedkeuring.</p>
       <div class="fi"><label>Je naam</label><input type="text" id="reg-naam" placeholder="Jan Jansen" autocomplete="name"></div>
       <div class="fi"><label>E-mailadres</label><input type="email" id="reg-email" placeholder="naam@bedrijf.nl" autocomplete="email"></div>
       <div class="fi"><label>Je beroep of bedrijf</label><input type="text" id="reg-beroep" placeholder="Bijv: Assurantiekantoor"></div>
-      <button class="btn-auth" onclick="doRegister()">Aanvraag indienen &rarr;</button>
+      <button class="btn-auth" onclick="doRegister()">Aanvraag indienen</button>
       <div class="auth-msg" id="reg-msg"></div>
     </div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
+<!-- ONBOARDING -->
+<div class="screen" id="screen-onboard">
+  <div style="display:flex;flex-direction:column;align-items:center;width:100%;padding:32px 24px;padding-top:calc(32px + var(--safe-top))">
+    <div class="ob-progress" id="ob-progress">
+      <div class="ob-dot active"></div>
+      <div class="ob-dot"></div>
+      <div class="ob-dot"></div>
+    </div>
+    <div class="ob-card" id="ob-card">
+      <!-- Dynamisch ingevuld -->
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR (desktop) -->
 <div class="sidebar" id="sidebar">
   <div class="sl-logo">Mail<em>Mate</em></div>
   <div class="sl-nav">
-    <button class="sl-item active" id="sb-compose" onclick="go('compose')"><span class="si">✍</span><span class="sl">Concept schrijven</span></button>
-    <button class="sl-item" id="sb-history" onclick="go('history')"><span class="si">◷</span><span class="sl">Geschiedenis</span></button>
-    <button class="sl-item" id="sb-clients" onclick="go('clients')"><span class="si">👥</span><span class="sl">Klanten</span></button>
-    <button class="sl-item" id="sb-kennis" onclick="go('kennis')"><span class="si">📚</span><span class="sl">Kennisbank</span></button>
-    <button class="sl-item" id="sb-webhook" onclick="go('webhook')"><span class="si">🔗</span><span class="sl">Koppeling</span></button>
-    <button class="sl-item" id="sb-settings" onclick="go('settings')"><span class="si">⚙</span><span class="sl">Instellingen</span></button>
+    <button class="sl-item active" id="sb-compose" onclick="go('compose')"><span class="si">&#9997;</span><span class="sl">Concept schrijven</span></button>
+    <button class="sl-item" id="sb-history" onclick="go('history')"><span class="si">&#9711;</span><span class="sl">Geschiedenis</span></button>
+    <button class="sl-item" id="sb-clients" onclick="go('clients')"><span class="si">&#128101;</span><span class="sl">Klanten</span></button>
+    <button class="sl-item" id="sb-kennis" onclick="go('kennis')"><span class="si">&#128218;</span><span class="sl">Kennisbank</span></button>
+    <button class="sl-item" id="sb-webhook" onclick="go('webhook')"><span class="si">&#128279;</span><span class="sl">Koppeling</span></button>
+    <button class="sl-item" id="sb-settings" onclick="go('settings')"><span class="si">&#9881;</span><span class="sl">Instellingen</span></button>
   </div>
   <div class="sl-bottom">
     <div class="sl-cr-label">Saldo</div>
-    <div class="sl-cr-val" id="sb-cr">—</div>
+    <div class="sl-cr-val" id="sb-cr">--</div>
     <div class="sl-cr-sub">berichten</div>
   </div>
   <button class="sl-logout" onclick="doOut()">Uitloggen</button>
@@ -280,7 +312,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
   <div class="topbar">
     <div class="tl-logo"><div class="lm">M</div>MailMate</div>
     <div class="tl-right">
-      <div class="cr-pill" id="cr-pill" onclick="go('credits')">— berichten</div>
+      <div class="cr-pill" id="cr-pill" onclick="go('credits')">-- berichten</div>
       <div class="av" id="av" onclick="go('settings')">?</div>
     </div>
   </div>
@@ -292,16 +324,16 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
       <div class="style-row" id="style-row"><button class="sb active" data-s="default" onclick="selStyle('default')">Standaard</button></div>
       <div class="mail-box"><label>Inkomende e-mail</label><textarea id="mail-ta" placeholder="Plak hier de e-mail tekst..."></textarea></div>
       <div class="opts-row">
-        <button class="ob" id="opt-ab" onclick="togOpt('ab')">Twee versies</button>
+        <button class="ob2" id="opt-ab" onclick="togOpt('ab')">Twee versies</button>
       </div>
-      <button class="btn-go" id="btn-go" onclick="doCompose()"><span id="go-lbl">Conceptantwoord schrijven</span><span>→</span></button>
+      <button class="btn-go" id="btn-go" onclick="doCompose()"><span id="go-lbl">Conceptantwoord schrijven</span><span>&#8594;</span></button>
       <div id="res-area" style="display:none">
         <div class="rcard" id="rcard">
           <div class="rh"><span>Conceptantwoord</span><span class="sent-badge normaal" id="sent-badge">Normaal</span></div>
           <div class="rbody" id="rbody"></div>
           <div class="rsub" id="rsubrow" style="display:none"><strong>Onderwerpregel:</strong> <span id="rsubtxt"></span></div>
           <div class="ract">
-            <button class="ra prim" id="btn-copy" onclick="doCopy()">Kopiëren</button>
+            <button class="ra prim" id="btn-copy" onclick="doCopy()">Kopieer</button>
             <button class="ra" onclick="togRefine()">Aanpassen</button>
             <button class="ra" onclick="doSaveTmpl()">Opslaan</button>
             <button class="ra" onclick="doRewrite()">Opnieuw</button>
@@ -312,8 +344,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
           </div>
         </div>
         <div id="ab-res" style="display:none">
-          <div class="rcard"><div class="rh"><span>Formele versie</span></div><div class="rbody" id="ab-f"></div><div class="ract"><button class="ra prim" onclick="cpText('ab-f')">Kopiëren</button></div></div>
-          <div class="rcard" style="margin-top:8px"><div class="rh"><span>Informele versie</span></div><div class="rbody" id="ab-i"></div><div class="ract"><button class="ra prim" onclick="cpText('ab-i')">Kopiëren</button></div></div>
+          <div class="rcard"><div class="rh"><span>Formele versie</span></div><div class="rbody" id="ab-f"></div><div class="ract"><button class="ra prim" onclick="cpText('ab-f')">Kopieer</button></div></div>
+          <div class="rcard" style="margin-top:8px"><div class="rh"><span>Informele versie</span></div><div class="rbody" id="ab-i"></div><div class="ract"><button class="ra prim" onclick="cpText('ab-i')">Kopieer</button></div></div>
         </div>
       </div>
     </div>
@@ -337,6 +369,11 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
     <div class="karea">
       <div class="kbox"><label>Eigen kennis</label><textarea id="kennis-ta" placeholder="Beschrijf je bedrijf, producten en diensten..."></textarea></div>
       <button class="btn-save" id="btn-ks" onclick="saveKennis()">Opslaan</button>
+      <div style="background:var(--cream);border:1px solid var(--border);padding:14px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase">Stijl trainen</div>
+        <div style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.65;margin-bottom:12px">Stuur 5+ eigen e-mails in. MailMate leert hoe jij schrijft. Kost 3 berichten.</div>
+        <button class="btn-save" onclick="startTrainStyle()">Stijl trainen (3 berichten)</button>
+      </div>
     </div>
   </div>
 
@@ -351,13 +388,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
         <div class="code" id="wh-url">Laden...</div>
         <div style="font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin:10px 0 7px">API sleutel</div>
         <div class="code" id="wh-key">Laden...</div>
-        <button class="btn-save" style="margin-top:8px" onclick="cpWebhook()">Kopiëren</button>
+        <button class="btn-save" style="margin-top:8px" onclick="cpWebhook()">Kopieer alles</button>
       </div>
       <div class="wcard">
         <h3>Stap voor stap</h3>
         <div class="wstep"><div class="wn">1</div><div class="wt">Nieuwe Zap aanmaken in Zapier</div></div>
         <div class="wstep"><div class="wn">2</div><div class="wt">Trigger: nieuwe e-mail in Outlook of Gmail</div></div>
-        <div class="wstep"><div class="wn">3</div><div class="wt">Actie: Webhooks by Zapier — POST</div></div>
+        <div class="wstep"><div class="wn">3</div><div class="wt">Actie: Webhooks by Zapier - POST</div></div>
         <div class="wstep"><div class="wn">4</div><div class="wt">URL: jouw webhook adres hierboven</div></div>
         <div class="wstep"><div class="wn">5</div><div class="wt">Header: x-api-key = jouw sleutel</div></div>
         <div class="wstep"><div class="wn">6</div><div class="wt">Body: subject, from, body</div></div>
@@ -371,15 +408,14 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
     <div class="topbar" style="position:sticky;top:0"><div class="tl-logo"><div class="lm">M</div>Instellingen</div></div>
     <div class="slist">
       <div class="stitle">Profiel</div>
-      <div class="sitem" onclick="editVak()"><div><h4>Vakgebied en doel</h4><p id="s-vak">Niet ingesteld</p></div><span class="sarr">›</span></div>
-      <div class="sitem" onclick="editToon()"><div><h4>Toon voorkeur</h4><p id="s-toon">Niet ingesteld</p></div><span class="sarr">›</span></div>
-      <div class="sitem" onclick="go('kennis')"><div><h4>Kennisbank</h4><p>Eigen kennis en documenten</p></div><span class="sarr">›</span></div>
-      <div class="stitle">Schrijfstijlen</div>
-      <div class="sitem" onclick="trainStyle()"><div><h4>Stijl trainen</h4><p>Stuur eigen mails in (3 berichten)</p></div><span class="sbadge">3 berichten</span><span class="sarr">›</span></div>
+      <div class="sitem" onclick="editVak()"><div><h4>Vakgebied en doel</h4><p id="s-vak">Niet ingesteld</p></div><span class="sarr">&#8250;</span></div>
+      <div class="sitem" onclick="editToon()"><div><h4>Toon voorkeur</h4><p id="s-toon">Niet ingesteld</p></div><span class="sarr">&#8250;</span></div>
+      <div class="sitem" onclick="go('kennis')"><div><h4>Kennisbank en stijlen</h4><p>Eigen kennis en schrijfstijlen</p></div><span class="sarr">&#8250;</span></div>
       <div class="stitle">Berichten</div>
-      <div class="sitem" onclick="go('credits')"><div><h4>Berichten kopen</h4><p id="s-cr">— berichten resterend</p></div><span class="sarr">›</span></div>
+      <div class="sitem" onclick="go('credits')"><div><h4>Berichten kopen</h4><p id="s-cr">-- berichten resterend</p></div><span class="sarr">&#8250;</span></div>
       <div class="stitle">Account</div>
-      <div class="sitem" onclick="doOut()"><div><h4 style="color:var(--red)">Uitloggen</h4><p id="s-email">—</p></div><span class="sarr">›</span></div>
+      <div class="sitem"><div><h4>E-mailadres</h4><p id="s-email">--</p></div></div>
+      <div class="sitem" onclick="doOut()"><div><h4 style="color:var(--red)">Uitloggen</h4></div><span class="sarr">&#8250;</span></div>
     </div>
   </div>
 
@@ -388,227 +424,252 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
     <div class="topbar" style="position:sticky;top:0"><div class="tl-logo"><div class="lm">M</div>Berichten kopen</div></div>
     <div class="clist">
       <div style="background:var(--gold-pale);border:1px solid rgba(184,134,11,0.2);padding:16px;text-align:center">
-        <div style="font-family:var(--serif);font-size:36px;font-weight:300" id="cr-big">—</div>
+        <div style="font-family:var(--serif);font-size:36px;font-weight:300" id="cr-big">--</div>
         <div style="font-size:13px;color:var(--muted)">berichten resterend</div>
       </div>
-      <div class="cplan" onclick="buy(50,9)"><div><h4>Starter</h4><p>50 berichten · €0.18 per concept</p></div><div class="cprice">€9</div></div>
+      <div style="font-size:12px;color:var(--muted);padding:4px 0;font-weight:300">1 concept = 1 bericht &nbsp;&#183;&nbsp; Stijl trainen = 3 berichten</div>
+      <div class="cplan" onclick="buy(50,9)"><div><h4>Starter</h4><p>50 berichten - 0.18 euro per concept</p></div><div class="cprice">9 euro</div></div>
       <div class="cplan feat" onclick="buy(200,29)" style="position:relative">
         <div style="position:absolute;top:-1px;left:18px;background:var(--gold2);color:var(--ink);font-size:9px;font-weight:700;padding:3px 9px;letter-spacing:0.1em;text-transform:uppercase">Meest gekozen</div>
-        <div><h4>Pro</h4><p>200 berichten · €0.145 per concept</p></div><div class="cprice">€29</div>
+        <div><h4>Pro</h4><p>200 berichten - 0.145 euro per concept</p></div><div class="cprice">29 euro</div>
       </div>
-      <div class="cplan" onclick="buy(600,79)"><div><h4>Business</h4><p>600 berichten · €0.13 per concept</p></div><div class="cprice">€79</div></div>
+      <div class="cplan" onclick="buy(600,79)"><div><h4>Business</h4><p>600 berichten - 0.13 euro per concept</p></div><div class="cprice">79 euro</div></div>
     </div>
   </div>
 
   <!-- BOTTOM NAV -->
   <nav class="bnav">
-    <button class="ni active" id="nav-compose" onclick="go('compose')"><span class="ic">✍</span><span class="lb">Schrijven</span></button>
-    <button class="ni" id="nav-history" onclick="go('history')"><span class="ic">◷</span><span class="lb">Geschiedenis</span></button>
-    <button class="ni center" id="nav-kennis" onclick="go('kennis')"><span class="ic">📚</span><span class="lb">Kennis</span></button>
-    <button class="ni" id="nav-webhook" onclick="go('webhook')"><span class="ic">🔗</span><span class="lb">Koppeling</span></button>
-    <button class="ni" id="nav-settings" onclick="go('settings')"><span class="ic">⚙</span><span class="lb">Instellingen</span></button>
+    <button class="ni active" id="nav-compose" onclick="go('compose')"><span class="ic">&#9997;</span><span class="lb">Schrijven</span></button>
+    <button class="ni" id="nav-history" onclick="go('history')"><span class="ic">&#9711;</span><span class="lb">Geschiedenis</span></button>
+    <button class="ni center" id="nav-kennis" onclick="go('kennis')"><span class="ic">&#128218;</span><span class="lb">Kennis</span></button>
+    <button class="ni" id="nav-webhook" onclick="go('webhook')"><span class="ic">&#128279;</span><span class="lb">Koppeling</span></button>
+    <button class="ni" id="nav-settings" onclick="go('settings')"><span class="ic">&#9881;</span><span class="lb">Instellingen</span></button>
   </nav>
 </div>
 
 <script>
 const SUPA_URL = 'https://btavdgcncefwekiktuok.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ0YXZkZ2NuY2Vmd2VraWt0dW9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyNTUzMzcsImV4cCI6MjA5MDgzMTMzN30.UuHhXyB67puxjJl0WzVc3PP-5xZRb4jjo2GGSxvMrVM';
-const API      = 'https://mm-main-production.up.railway.app';
-const CODE     = 'mailmate2025';
+const API = 'https://mm-main-production.up.railway.app';
 
 const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-let user = null, prof = null, style = 'default', opts = {ab:false}, lastConcept = '', lastMail = '';
+let prof = null, style = 'default', opts = {ab:false}, lastConcept = '', lastMail = '';
+let obStep = 0, obToon = '';
 
 // INIT
 window.addEventListener('load', async () => {
-  if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
-  setLdg('Sessie controleren...');
-
-  // Check magic link token in URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const token = urlParams.get('token');
-  if (token) {
-    // Valideer token via Supabase
-    const { data } = await sb.from('users').select('*').eq('login_token', token).single();
-    if (data && data.approved) {
-      // Token geldig - verwijder uit URL
-      window.history.replaceState({}, '', window.location.pathname);
-      prof = data;
-      // Verwijder token na gebruik
-      await sb.from('users').update({ login_token: null }).eq('id', data.id);
-      await initApp();
-      return;
-    }
-  }
-
-  // Check opgeslagen sessie
+  setLdg('Laden...');
   const savedKey = sessionStorage.getItem('mm_key');
   if (savedKey) {
     const { data } = await sb.from('users').select('*').eq('webhook_key', savedKey).single();
     if (data && data.approved) {
       prof = data;
-      await initApp();
+      if (!prof.onboarded) { hideLdg(); startOnboarding(); return; }
+      await showApp();
       return;
-    } else {
-      sessionStorage.removeItem('mm_key');
     }
+    sessionStorage.removeItem('mm_key');
   }
-
   hideLdg();
 });
 
-async function initApp() {
-  setLdg('Profiel laden...');
-  // Sla sessie op
-  if (prof && prof.webhook_key) sessionStorage.setItem('mm_key', prof.webhook_key);
-  document.getElementById('screen-auth').classList.remove('active');
-  document.getElementById('main-wrap').style.display = 'flex';
-  if (window.innerWidth >= 1024) document.getElementById('sidebar').classList.add('on');
-  hideLdg();
-  refreshUI();
-  loadHist(); loadClients();
-}
-
 // AUTH TABS
-function swAuthTab(tab) {
-  document.getElementById('tab-login').style.display = tab === 'login' ? 'block' : 'none';
-  document.getElementById('tab-reg').style.display   = tab === 'reg'   ? 'block' : 'none';
-  document.getElementById('tab-btn-login').classList.toggle('active', tab === 'login');
-  document.getElementById('tab-btn-reg').classList.toggle('active', tab === 'reg');
+function swAuthTab(t) {
+  document.getElementById('tab-login').style.display = t==='login'?'block':'none';
+  document.getElementById('tab-reg').style.display = t==='reg'?'block':'none';
+  document.getElementById('tab-btn-login').classList.toggle('active', t==='login');
+  document.getElementById('tab-btn-reg').classList.toggle('active', t==='reg');
 }
 
-// INLOGGEN MET CODE
+// INLOGGEN
 async function doCodeLogin() {
   const code = document.getElementById('login-code').value.trim();
-  const msg  = document.getElementById('login-msg');
-  if (!code) { msg.textContent = 'Vul je toegangscode in'; msg.className = 'auth-msg err'; return; }
-  msg.textContent = 'Controleren...'; msg.className = 'auth-msg';
-  setLdg('Toegang controleren...');
+  const msg = document.getElementById('login-msg');
+  if (!code) { msg.textContent='Vul je toegangscode in'; msg.className='auth-msg err'; return; }
+  msg.textContent='Controleren...'; msg.className='auth-msg';
+  setLdg('Inloggen...');
   const { data } = await sb.from('users').select('*').eq('webhook_key', code).single();
-  if (data && data.approved) { prof = data; await initApp(); return; }
+  if (data && data.approved) {
+    prof = data;
+    sessionStorage.setItem('mm_key', code);
+    if (!prof.onboarded) { hideLdg(); startOnboarding(); return; }
+    await showApp();
+    return;
+  }
   hideLdg();
-  msg.textContent = data && !data.approved ? 'Je account wacht nog op goedkeuring.' : 'Onjuiste toegangscode.';
+  msg.textContent = data && !data.approved ? 'Je account wacht op goedkeuring.' : 'Onjuiste toegangscode.';
   msg.className = 'auth-msg err';
 }
 
 // REGISTREREN
 async function doRegister() {
-  const naam   = document.getElementById('reg-naam').value.trim();
-  const email  = document.getElementById('reg-email').value.trim();
-  const beroep = document.getElementById('reg-beroep').value.trim();
-  const msg    = document.getElementById('reg-msg');
-
-  if (!naam || !email) { msg.textContent = 'Vul naam en e-mailadres in'; msg.className = 'auth-msg err'; return; }
-  msg.textContent = 'Aanvraag indienen...'; msg.className = 'auth-msg';
-  setLdg('Aanvraag verwerken...');
-
-  // Check of e-mail al bestaat
+  const naam=document.getElementById('reg-naam').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const beroep=document.getElementById('reg-beroep').value.trim();
+  const msg=document.getElementById('reg-msg');
+  if (!naam||!email) { msg.textContent='Vul naam en e-mailadres in'; msg.className='auth-msg err'; return; }
+  msg.textContent='Aanvraag indienen...'; msg.className='auth-msg';
+  setLdg('Verwerken...');
   const { data: existing } = await sb.from('users').select('id').eq('email', email).single();
-  if (existing) {
-    hideLdg();
-    msg.textContent = 'Dit e-mailadres is al geregistreerd. Gebruik de inlogknop.';
-    msg.className = 'auth-msg err';
-    swAuthTab('login');
-    return;
-  }
-
-  // Nieuw profiel aanmaken
+  if (existing) { hideLdg(); msg.textContent='E-mailadres al geregistreerd.'; msg.className='auth-msg err'; swAuthTab('login'); return; }
   const webhookKey = 'mm_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  const { error } = await sb.from('users').insert({
-    telegram_id: 0,
-    name: naam,
-    email: email,
-    credits: 0,
-    concept_count: 0,
-    style_profiles: JSON.stringify({ default: '' }),
-    active_style: 'default',
-    user_knowledge: '',
-    onboarded: false,
-    approved: false,
-    vakgebied: beroep || '',
-    doel: '',
-    toon_voorkeur: '',
-    webhook_key: webhookKey
-  });
-
-  if (error) {
-    hideLdg();
-    msg.textContent = 'Fout: ' + (error.message || JSON.stringify(error));
-    msg.className = 'auth-msg err';
-    return;
-  }
-
-  // Notificeer admin via Railway
+  const { error } = await sb.from('users').insert({ telegram_id:0, name:naam, email:email, credits:0, concept_count:0, style_profiles:JSON.stringify({default:''}), active_style:'default', user_knowledge:'', onboarded:false, approved:false, vakgebied:beroep||'', doel:'', toon_voorkeur:'', webhook_key:webhookKey });
+  if (error) { hideLdg(); msg.textContent='Fout: '+(error.message||'Probeer opnieuw'); msg.className='auth-msg err'; return; }
   try {
-    const notifyRes = await fetch(API + '/api/notify-admin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ naam, email, beroep })
-    });
-    const notifyData = await notifyRes.json();
-    if (!notifyData.success) {
-      msg.textContent = 'Aanvraag opgeslagen maar notificatie mislukt: ' + JSON.stringify(notifyData);
-      msg.className = 'auth-msg err';
-      hideLdg();
-      return;
-    }
-  } catch(e) {
-    msg.textContent = 'Aanvraag opgeslagen maar notificatie mislukt: ' + e.message;
-    msg.className = 'auth-msg err';
-    hideLdg();
-    return;
-  }
-
+    const nr = await fetch(API+'/api/notify-admin', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({naam, email, beroep}) });
+    const nd = await nr.json();
+    if (!nd.success) { hideLdg(); msg.textContent='Aanvraag opgeslagen maar notificatie mislukt: '+JSON.stringify(nd); msg.className='auth-msg err'; return; }
+  } catch(e) { hideLdg(); msg.textContent='Aanvraag opgeslagen maar notificatie mislukt: '+e.message; msg.className='auth-msg err'; return; }
   hideLdg();
-  msg.textContent = 'Aanvraag ingediend! Je ontvangt een e-mail zodra je toegang hebt. Dit duurt maximaal 1 werkdag.';
-  msg.className = 'auth-msg ok';
+  msg.textContent='Aanvraag ingediend! Je ontvangt je toegangscode zodra je bent goedgekeurd.';
+  msg.className='auth-msg ok';
 }
 
 function doOut() {
   sessionStorage.removeItem('mm_key');
   prof = null;
-  document.getElementById('main-wrap').style.display = 'none';
+  document.getElementById('main-wrap').style.display='none';
   document.getElementById('sidebar').classList.remove('on');
   document.getElementById('screen-auth').classList.add('active');
+  document.getElementById('screen-onboard').classList.remove('active');
   go('compose');
+}
+
+// ONBOARDING
+function startOnboarding() {
+  document.getElementById('screen-auth').classList.remove('active');
+  document.getElementById('screen-onboard').classList.add('active');
+  obStep = 0;
+  renderObStep();
+}
+
+function renderObStep() {
+  const dots = document.querySelectorAll('.ob-dot');
+  dots.forEach((d,i) => d.classList.toggle('active', i<=obStep));
+  const card = document.getElementById('ob-card');
+  if (obStep === 0) {
+    card.innerHTML = `
+      <div class="ob-step">Stap 1 van 3</div>
+      <div class="ob-title">Wat doe jij?</div>
+      <div class="ob-desc">Beschrijf je vakgebied. MailMate gebruikt dit om beter te schrijven.</div>
+      <input class="ob-input" id="ob-vak" placeholder="Bijv: Assurantiekantoor - klantadvies" value="${prof.vakgebied||''}">
+      <input class="ob-input" id="ob-doel" placeholder="Doel: offertes, klachten, advies..." value="${prof.doel||''}">
+      <button class="btn-auth" onclick="obNext()">Volgende</button>
+      <span class="ob-skip" onclick="obSkip()">Overslaan</span>`;
+  } else if (obStep === 1) {
+    card.innerHTML = `
+      <div class="ob-step">Stap 2 van 3</div>
+      <div class="ob-title">Hoe schrijf jij?</div>
+      <div class="ob-desc">Kies je schrijftoon. Je kunt dit later altijd aanpassen.</div>
+      <div class="ob-toon-grid">
+        <button class="ob-toon${obToon==='Formeel (u)'?' active':''}" onclick="selToon('Formeel (u)', this)">Formeel<br><small>(u)</small></button>
+        <button class="ob-toon${obToon==='Informeel (je)'?' active':''}" onclick="selToon('Informeel (je)', this)">Informeel<br><small>(je)</small></button>
+        <button class="ob-toon${obToon==='Mix'?' active':''}" onclick="selToon('Mix', this)">Mix</button>
+      </div>
+      <button class="btn-auth" onclick="obNext()">Volgende</button>
+      <span class="ob-skip" onclick="obSkip()">Overslaan</span>`;
+  } else if (obStep === 2) {
+    card.innerHTML = `
+      <div class="ob-step">Stap 3 van 3</div>
+      <div class="ob-title">Stijl trainen</div>
+      <div class="ob-desc">Stuur 5+ eigen e-mails in. MailMate leert precies hoe jij schrijft. Scheid ze met --<br><br>Kost 3 berichten. Je kunt dit ook later doen.</div>
+      <textarea class="ob-ta" id="ob-mails" placeholder="E-mail 1...&#10;--&#10;E-mail 2...&#10;--&#10;E-mail 3..."></textarea>
+      <button class="btn-auth" id="ob-train-btn" onclick="obTrain()">Stijl trainen en afronden</button>
+      <span class="ob-skip" onclick="obFinish()">Overslaan - direct beginnen</span>`;
+  }
+}
+
+function selToon(toon, el) {
+  obToon = toon;
+  document.querySelectorAll('.ob-toon').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function obNext() {
+  if (obStep === 0) {
+    const vak = document.getElementById('ob-vak').value.trim();
+    const doel = document.getElementById('ob-doel').value.trim();
+    await sb.from('users').update({ vakgebied:vak||'Algemeen', doel:doel }).eq('webhook_key', prof.webhook_key);
+    if (prof) { prof.vakgebied=vak||'Algemeen'; prof.doel=doel; }
+  } else if (obStep === 1) {
+    if (obToon) {
+      await sb.from('users').update({ toon_voorkeur:obToon }).eq('webhook_key', prof.webhook_key);
+      if (prof) prof.toon_voorkeur=obToon;
+    }
+  }
+  obStep++;
+  renderObStep();
+}
+
+function obSkip() { obStep++; if(obStep>2) obFinish(); else renderObStep(); }
+
+async function obTrain() {
+  const mails = document.getElementById('ob-mails').value.trim();
+  if (mails.length < 100) { toast('Stuur meer e-mails in'); return; }
+  if (prof.credits < 3) { toast('Niet genoeg berichten. Sla over.'); return; }
+  const btn = document.getElementById('ob-train-btn');
+  btn.textContent='Analyseren...'; btn.disabled=true;
+  try {
+    const r = await fetch(API+'/api/train-style', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ telegram_id:prof.telegram_id||0, api_key:prof.webhook_key, name:'default', mails }) });
+    const d = await r.json();
+    if (d.success) { if(prof){prof.credits-=3;const p=JSON.parse(prof.style_profiles||'{}');p['default']=d.profile;prof.style_profiles=JSON.stringify(p);} toast('Stijl geleerd!'); }
+    else toast('Fout: '+(d.error||'onbekend'));
+  } catch(e) { toast('Fout: '+e.message); }
+  await obFinish();
+}
+
+async function obFinish() {
+  await sb.from('users').update({ onboarded:true }).eq('webhook_key', prof.webhook_key);
+  if (prof) prof.onboarded=true;
+  document.getElementById('screen-onboard').classList.remove('active');
+  await showApp();
+}
+
+// APP
+async function showApp() {
+  setLdg('Laden...');
+  document.getElementById('screen-auth').classList.remove('active');
+  document.getElementById('screen-onboard').classList.remove('active');
+  document.getElementById('main-wrap').style.display='flex';
+  if (window.innerWidth>=1024) document.getElementById('sidebar').classList.add('on');
+  refreshUI();
+  hideLdg();
+  loadHist(); loadClients();
 }
 
 function refreshUI() {
   if (!prof) return;
-  const cr = prof.credits || 0;
-  document.getElementById('cr-pill').textContent = cr + ' berichten';
-  document.getElementById('cr-big').textContent = cr;
-  if (document.getElementById('sb-cr')) document.getElementById('sb-cr').textContent = cr;
-  document.getElementById('av').textContent = (prof.name||user?.email||'U').charAt(0).toUpperCase();
-  document.getElementById('s-email').textContent = prof?.name || '—';
-  document.getElementById('s-vak').textContent = prof.vakgebied||'Niet ingesteld';
-  document.getElementById('s-toon').textContent = prof.toon_voorkeur||'Niet ingesteld';
-  document.getElementById('s-cr').textContent = cr + ' berichten resterend';
-  if (document.getElementById('kennis-ta')) document.getElementById('kennis-ta').value = prof.user_knowledge||'';
-  // Styles
-  const styles = Object.keys(JSON.parse(prof.style_profiles||'{"default":""}'));
-  document.getElementById('style-row').innerHTML = styles.map(n => `<button class="sb${n===style?' active':''}" data-s="${n}" onclick="selStyle('${n}')">${n}</button>`).join('');
-  // Webhook
-  const wu = API + '/mailhook/' + (prof.telegram_id||0);
-  if (document.getElementById('wh-url')) { document.getElementById('wh-url').innerHTML = `<span class="hl">${wu}</span>`; document.getElementById('wh-key').innerHTML = `<span class="hl">${prof.webhook_key||'—'}</span>`; }
+  const cr = prof.credits||0;
+  document.getElementById('cr-pill').textContent=cr+' berichten';
+  document.getElementById('cr-big').textContent=cr;
+  if(document.getElementById('sb-cr')) document.getElementById('sb-cr').textContent=cr;
+  document.getElementById('av').textContent=(prof.name||'U').charAt(0).toUpperCase();
+  document.getElementById('s-email').textContent=prof.email||'--';
+  document.getElementById('s-vak').textContent=prof.vakgebied||'Niet ingesteld';
+  document.getElementById('s-toon').textContent=prof.toon_voorkeur||'Niet ingesteld';
+  document.getElementById('s-cr').textContent=cr+' berichten resterend';
+  if(document.getElementById('kennis-ta')) document.getElementById('kennis-ta').value=prof.user_knowledge||'';
+  const styles=Object.keys(JSON.parse(prof.style_profiles||'{"default":""}'));
+  document.getElementById('style-row').innerHTML=styles.map(n=>`<button class="sb${n===style?' active':''}" data-s="${n}" onclick="selStyle('${n}')">${n}</button>`).join('');
+  const wu=API+'/mailhook/'+(prof.telegram_id||0);
+  if(document.getElementById('wh-url')){document.getElementById('wh-url').innerHTML=`<span class="hl">${wu}</span>`;document.getElementById('wh-key').innerHTML=`<span class="hl">${prof.webhook_key||'--'}</span>`;}
 }
 
-
+function selStyle(n) { style=n; document.querySelectorAll('.sb').forEach(b=>b.classList.toggle('active',b.dataset.s===n)); }
+function togOpt(k) { opts[k]=!opts[k]; document.getElementById('opt-'+k).classList.toggle('active',opts[k]); }
 
 // COMPOSE
-function selStyle(n) { style=n; document.querySelectorAll('.sb').forEach(b => b.classList.toggle('active', b.dataset.s===n)); }
-function togOpt(k) { opts[k]=!opts[k]; document.getElementById('opt-'+k).classList.toggle('active',opts[k]); }
 async function doCompose() {
-  const txt = document.getElementById('mail-ta').value.trim();
-  if (txt.length<15) { toast('E-mail tekst te kort'); return; }
-  if (!prof||prof.credits<1) { toast('Geen berichten meer'); go('credits'); return; }
-  const btn = document.getElementById('btn-go'); btn.disabled=true; document.getElementById('go-lbl').textContent='Schrijven...';
+  const txt=document.getElementById('mail-ta').value.trim();
+  if(txt.length<15){toast('E-mail te kort');return;}
+  if(!prof||prof.credits<1){toast('Geen berichten meer');go('credits');return;}
+  const btn=document.getElementById('btn-go'); btn.disabled=true; document.getElementById('go-lbl').textContent='Schrijven...';
   try {
-    const r = await fetch(API+(opts.ab?'/api/compose-ab':'/api/compose'), { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ telegram_id:prof.telegram_id||0, api_key:prof.webhook_key, mail_text:txt, style }) });
-    if (!r.ok) throw new Error('Server niet beschikbaar');
-    const d = await r.json();
-    lastMail = txt;
-    if (opts.ab&&d.formal) {
+    const r=await fetch(API+(opts.ab?'/api/compose-ab':'/api/compose'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegram_id:prof.telegram_id||0,api_key:prof.webhook_key,mail_text:txt,style})});
+    if(!r.ok) throw new Error('Server niet beschikbaar');
+    const d=await r.json();
+    lastMail=txt;
+    if(opts.ab&&d.formal){
       document.getElementById('res-area').style.display='block';
       document.getElementById('rcard').style.display='none';
       document.getElementById('ab-res').style.display='block';
@@ -620,123 +681,115 @@ async function doCompose() {
       document.getElementById('rcard').style.display='block';
       document.getElementById('ab-res').style.display='none';
       document.getElementById('rbody').textContent=d.concept;
-      if (d.subject_line) { document.getElementById('rsubrow').style.display='block'; document.getElementById('rsubtxt').textContent=d.subject_line; }
+      if(d.subject_line){document.getElementById('rsubrow').style.display='block';document.getElementById('rsubtxt').textContent=d.subject_line;}
       const sent=(d.sentiment||'normaal').toLowerCase();
-      const sb=document.getElementById('sent-badge'); sb.textContent=sent.charAt(0).toUpperCase()+sent.slice(1); sb.className='sent-badge '+sent;
+      const sb2=document.getElementById('sent-badge'); sb2.textContent=sent.charAt(0).toUpperCase()+sent.slice(1); sb2.className='sent-badge '+sent;
     }
-    prof.credits -= opts.ab?2:1; prof.concept_count=(prof.concept_count||0)+1; refreshUI();
+    prof.credits-=opts.ab?2:1; prof.concept_count=(prof.concept_count||0)+1; refreshUI();
     document.getElementById('res-area').scrollIntoView({behavior:'smooth',block:'start'});
-  } catch(e) { toast('Fout: '+e.message); }
+  } catch(e){toast('Fout: '+e.message);}
   btn.disabled=false; document.getElementById('go-lbl').textContent='Conceptantwoord schrijven';
 }
+
 async function doRefine() {
-  const ins=document.getElementById('ri').value.trim(); if (!ins||!lastConcept) return;
+  const ins=document.getElementById('ri').value.trim(); if(!ins||!lastConcept) return;
   const btn=document.querySelector('.btn-rf'); btn.textContent='...'; btn.disabled=true;
   try {
     const r=await fetch(API+'/api/refine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegram_id:prof.telegram_id||0,api_key:prof.webhook_key,concept:lastConcept,instruction:ins})});
     const d=await r.json();
-    if (d.refined) { lastConcept=d.refined; document.getElementById('rbody').textContent=d.refined; document.getElementById('ri').value=''; toast('Aangepast!'); }
-  } catch(e) { toast('Fout'); }
+    if(d.refined){lastConcept=d.refined;document.getElementById('rbody').textContent=d.refined;document.getElementById('ri').value='';toast('Aangepast!');}
+  } catch(e){toast('Fout');}
   btn.textContent='Aanpassen'; btn.disabled=false;
 }
-function doRewrite() { if (!lastMail) return; document.getElementById('mail-ta').value=lastMail; document.getElementById('res-area').style.display='none'; doCompose(); }
-function togRefine() { const r=document.getElementById('refine-row'); r.style.display=r.style.display==='none'?'flex':'none'; if(r.style.display==='flex') document.getElementById('ri').focus(); }
-function doCopy() { cpText('rbody'); }
-function cpText(id) { navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{ toast('Gekopieerd!'); const b=document.getElementById('btn-copy'); if(b){b.classList.add('done');b.textContent='Gekopieerd!';setTimeout(()=>{b.classList.remove('done');b.textContent='Kopiëren';},2000);} }); }
-function doSaveTmpl() {
-  if (!lastConcept) return;
-  showMod(`<h3>Opslaan als antwoord</h3><p style="font-size:13px;color:var(--muted);margin-bottom:14px">Geef een naam:</p><input id="tn" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream);margin-bottom:12px" placeholder="Bijv: Standaard offerte antwoord"><button class="btn-go" onclick="saveTmpl()">Opslaan →</button>`);
-}
-async function saveTmpl() {
-  const n=document.getElementById('tn').value.trim(); if (!n) return;
-  await sb.from('templates').insert({telegram_id:prof.telegram_id||0,name:n,content:lastConcept,created_at:new Date().toISOString()});
-  closeMod(); toast('"'+n+'" opgeslagen!');
-}
+
+function doRewrite(){if(!lastMail)return;document.getElementById('mail-ta').value=lastMail;document.getElementById('res-area').style.display='none';doCompose();}
+function togRefine(){const r=document.getElementById('refine-row');r.style.display=r.style.display==='none'?'flex':'none';if(r.style.display==='flex')document.getElementById('ri').focus();}
+function doCopy(){cpText('rbody');}
+function cpText(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{toast('Gekopieerd!');const b=document.getElementById('btn-copy');if(b){b.classList.add('done');b.textContent='Gekopieerd!';setTimeout(()=>{b.classList.remove('done');b.textContent='Kopieer';},2000);}});}
+function doSaveTmpl(){if(!lastConcept)return;showMod(`<h3>Opslaan als antwoord</h3><p style="font-size:13px;color:var(--muted);margin-bottom:14px">Geef een naam:</p><input id="tn" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream);margin-bottom:12px" placeholder="Bijv: Standaard offerte antwoord"><button class="btn-go" onclick="saveTmpl()">Opslaan</button>`);}
+async function saveTmpl(){const n=document.getElementById('tn').value.trim();if(!n)return;await sb.from('templates').insert({telegram_id:prof.telegram_id||0,name:n,content:lastConcept,created_at:new Date().toISOString()});closeMod();toast('"'+n+'" opgeslagen!');}
 
 // HISTORY
-async function loadHist() {
-  const { data } = await sb.from('history').select('*').eq('telegram_id',prof?.telegram_id||0).order('created_at',{ascending:false}).limit(20);
+async function loadHist(){
+  const{data}=await sb.from('history').select('*').eq('telegram_id',prof?.telegram_id||0).order('created_at',{ascending:false}).limit(20);
   const el=document.getElementById('hlist');
-  if (!data?.length) { el.innerHTML='<div class="empty"><h3>Nog geen concepten</h3><p>Je concepten verschijnen hier.</p></div>'; return; }
+  if(!data?.length){el.innerHTML='<div class="empty"><h3>Nog geen concepten</h3><p>Je concepten verschijnen hier.</p></div>';return;}
   el.innerHTML=data.map(h=>`<div class="hitem" onclick="loadHist_('${encodeURIComponent(h.concept||'')}')"><div class="hsubj">${h.subject||'Zonder onderwerp'}</div><div class="hprev">${(h.concept||'').slice(0,100)}</div><div class="hdate">${new Date(h.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'})}</div></div>`).join('');
 }
-function loadHist_(enc) { lastConcept=decodeURIComponent(enc); document.getElementById('rbody').textContent=lastConcept; document.getElementById('res-area').style.display='block'; document.getElementById('rcard').style.display='block'; document.getElementById('ab-res').style.display='none'; go('compose'); }
+function loadHist_(enc){lastConcept=decodeURIComponent(enc);document.getElementById('rbody').textContent=lastConcept;document.getElementById('res-area').style.display='block';document.getElementById('rcard').style.display='block';document.getElementById('ab-res').style.display='none';go('compose');}
 
 // CLIENTS
-async function loadClients() {
-  const { data } = await sb.from('clients').select('*').eq('telegram_id',prof?.telegram_id||0).order('last_contact',{ascending:false}).limit(30);
+async function loadClients(){
+  const{data}=await sb.from('clients').select('*').eq('telegram_id',prof?.telegram_id||0).order('last_contact',{ascending:false}).limit(30);
   const el=document.getElementById('klist');
-  if (!data?.length) { el.innerHTML='<div class="empty"><h3>Nog geen klanten</h3><p>Worden automatisch toegevoegd.</p></div>'; return; }
-  el.innerHTML=data.map(c=>`<div style="background:var(--white);border:1px solid var(--border);padding:13px 14px;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:500">${c.email}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${c.last_subject||'—'} · ${new Date(c.last_contact).toLocaleDateString('nl-NL')}</div></div><div style="background:var(--cream);padding:3px 9px;font-size:11px;color:var(--muted)">${c.contact_count}×</div></div>`).join('');
+  if(!data?.length){el.innerHTML='<div class="empty"><h3>Nog geen klanten</h3><p>Worden automatisch toegevoegd.</p></div>';return;}
+  el.innerHTML=data.map(c=>`<div style="background:var(--white);border:1px solid var(--border);padding:13px 14px;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:13px;font-weight:500">${c.email}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${c.last_subject||'--'} - ${new Date(c.last_contact).toLocaleDateString('nl-NL')}</div></div><div style="background:var(--cream);padding:3px 9px;font-size:11px;color:var(--muted)">${c.contact_count}x</div></div>`).join('');
 }
 
 // KENNIS
-async function saveKennis() {
-  const t=document.getElementById('kennis-ta').value; const btn=document.getElementById('btn-ks');
+async function saveKennis(){
+  const t=document.getElementById('kennis-ta').value;const btn=document.getElementById('btn-ks');
   btn.textContent='Opslaan...';
-  await sb.from('users').update({user_knowledge:t,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key);
-  if (prof) prof.user_knowledge=t;
-  btn.textContent='Opgeslagen!'; btn.classList.add('saved'); setTimeout(()=>{btn.textContent='Opslaan';btn.classList.remove('saved');},2000);
+  await sb.from('users').update({user_knowledge:t}).eq('webhook_key',prof.webhook_key);
+  if(prof)prof.user_knowledge=t;
+  btn.textContent='Opgeslagen!';btn.classList.add('saved');setTimeout(()=>{btn.textContent='Opslaan';btn.classList.remove('saved');},2000);
+}
+
+// STIJL TRAINEN
+function startTrainStyle(){
+  if(!prof||prof.credits<3){toast('Minimaal 3 berichten nodig');return;}
+  showMod(`<h3>Stijl trainen</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Stuur 5+ eigen e-mails in, gescheiden door --</p><input id="sn" placeholder="Naam voor stijl (bijv: formeel)" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream);margin-bottom:8px"><textarea id="sm" placeholder="E-mail 1...&#10;--&#10;E-mail 2..." style="width:100%;padding:12px;border:1px solid var(--border);font-family:var(--sans);font-size:13px;min-height:140px;resize:none;background:var(--cream);margin-bottom:12px"></textarea><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Kost 3 berichten - Saldo: ${prof.credits}</div><button class="btn-go" id="btn-tr" onclick="doTrain()">Stijl trainen</button>`);
+}
+async function doTrain(){
+  const n=document.getElementById('sn').value.trim()||'default';
+  const m=document.getElementById('sm').value.trim();
+  if(m.length<100){toast('Stuur meer mails in');return;}
+  const btn=document.getElementById('btn-tr');btn.textContent='Analyseren...';btn.disabled=true;
+  try{
+    const r=await fetch(API+'/api/train-style',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegram_id:prof.telegram_id||0,api_key:prof.webhook_key,name:n,mails:m})});
+    const d=await r.json();
+    if(d.success){if(prof){prof.credits-=3;const p=JSON.parse(prof.style_profiles||'{}');p[n]=d.profile;prof.style_profiles=JSON.stringify(p);}refreshUI();closeMod();toast('Stijl "'+n+'" getraind!');}
+    else toast('Fout: '+(d.error||'onbekend'));
+  }catch(e){toast('Fout: '+e.message);}
+  btn.textContent='Stijl trainen';btn.disabled=false;
 }
 
 // WEBHOOK
-function cpWebhook() { const u=API+'/mailhook/'+(prof?.telegram_id||0); navigator.clipboard.writeText('URL: '+u+'\nSleutel: '+(prof?.webhook_key||'')).then(()=>toast('Gekopieerd!')); }
-async function resetKey() { const k='wk_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); await sb.from('users').update({webhook_key:k,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key); if(prof)prof.webhook_key=k; refreshUI(); toast('Nieuwe sleutel aangemaakt!'); }
+function cpWebhook(){const u=API+'/mailhook/'+(prof?.telegram_id||0);navigator.clipboard.writeText('URL: '+u+'\nSleutel: '+(prof?.webhook_key||'')).then(()=>toast('Gekopieerd!'));}
+async function resetKey(){const k='mm_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);await sb.from('users').update({webhook_key:k}).eq('webhook_key',prof.webhook_key);if(prof)prof.webhook_key=k;sessionStorage.setItem('mm_key',k);refreshUI();toast('Nieuwe sleutel aangemaakt!');}
 
-// SETTINGS
-function editVak() {
-  showMod(`<h3>Vakgebied en doel</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Beschrijf wat jij doet</p><div style="margin-bottom:10px"><label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Vakgebied</label><input id="mv" value="${prof?.vakgebied||''}" placeholder="Bijv: Assurantiekantoor" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream)"></div><div style="margin-bottom:14px"><label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Doel</label><input id="md" value="${prof?.doel||''}" placeholder="Bijv: Klantadvies en polisbeheer" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream)"></div><button class="btn-go" onclick="saveVak()">Opslaan →</button>`);
-}
-async function saveVak() { const v=document.getElementById('mv').value.trim(),d=document.getElementById('md').value.trim(); await sb.from('users').update({vakgebied:v,doel:d,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key); if(prof){prof.vakgebied=v;prof.doel=d;} refreshUI(); closeMod(); toast('Opgeslagen!'); }
-function editToon() {
-  showMod(`<h3>Toon voorkeur</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Hoe schrijf jij normaal?</p>${['Formeel (u)','Informeel (je)','Mix — hangt af van klant'].map(t=>`<div onclick="saveToon('${t}')" style="padding:13px;border:1px solid var(--border);margin-bottom:7px;cursor:pointer;background:${prof?.toon_voorkeur===t?'var(--gold-pale)':'var(--white)'};display:flex;justify-content:space-between"><span style="font-size:14px;font-weight:500">${t}</span>${prof?.toon_voorkeur===t?'<span style="color:var(--gold)">✓</span>':''}</div>`).join('')}`);
-}
-async function saveToon(t) { await sb.from('users').update({toon_voorkeur:t,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key); if(prof)prof.toon_voorkeur=t; refreshUI(); closeMod(); toast('Opgeslagen: '+t); }
-function trainStyle() {
-  if (!prof||prof.credits<3) { toast('Minimaal 3 berichten nodig'); return; }
-  showMod(`<h3>Stijl trainen</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Stuur 5+ eigen mails in, gescheiden door ——</p><input id="sn" placeholder="Naam voor stijl (bijv: formeel)" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream);margin-bottom:8px"><textarea id="sm" placeholder="E-mail 1...&#10;——&#10;E-mail 2..." style="width:100%;padding:12px;border:1px solid var(--border);font-family:var(--sans);font-size:13px;min-height:140px;resize:none;background:var(--cream);margin-bottom:12px"></textarea><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Kost 3 berichten · Saldo: ${prof.credits}</div><button class="btn-go" id="btn-tr" onclick="doTrain()">Stijl trainen →</button>`);
-}
-async function doTrain() {
-  const n=document.getElementById('sn').value.trim()||'default', m=document.getElementById('sm').value.trim();
-  if (m.length<100) { toast('Stuur meer mails in'); return; }
-  const btn=document.getElementById('btn-tr'); btn.textContent='Analyseren...'; btn.disabled=true;
-  try {
-    const r=await fetch(API+'/api/train-style',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({telegram_id:prof.telegram_id||0,api_key:prof.webhook_key,name:n,mails:m})});
-    const d=await r.json();
-    if (d.success) { if(prof){prof.credits-=3;const p=JSON.parse(prof.style_profiles||'{}');p[n]=d.profile;prof.style_profiles=JSON.stringify(p);} refreshUI(); closeMod(); toast('Stijl "'+n+'" getraind!'); }
-    else toast('Fout: '+(d.error||'onbekend'));
-  } catch(e) { toast('Fout: '+e.message); }
-  btn.textContent='Stijl trainen →'; btn.disabled=false;
-}
+// SETTINGS MODALS
+function editVak(){showMod(`<h3>Vakgebied en doel</h3><div style="margin-bottom:10px"><label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Vakgebied</label><input id="mv" value="${prof?.vakgebied||''}" placeholder="Bijv: Assurantiekantoor" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream)"></div><div style="margin-bottom:14px"><label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Doel</label><input id="md" value="${prof?.doel||''}" placeholder="Bijv: Klantadvies en polisbeheer" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream)"></div><button class="btn-go" onclick="saveVak()">Opslaan</button>`);}
+async function saveVak(){const v=document.getElementById('mv').value.trim(),d=document.getElementById('md').value.trim();await sb.from('users').update({vakgebied:v,doel:d}).eq('webhook_key',prof.webhook_key);if(prof){prof.vakgebied=v;prof.doel=d;}refreshUI();closeMod();toast('Opgeslagen!');}
+
+function editToon(){showMod(`<h3>Toon voorkeur</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Hoe schrijf jij normaal?</p>${['Formeel (u)','Informeel (je)','Mix - hangt af van klant'].map(t=>`<div onclick="saveToon('${t}')" style="padding:13px;border:1px solid var(--border);margin-bottom:7px;cursor:pointer;background:${prof?.toon_voorkeur===t?'var(--gold-pale)':'var(--white)'};display:flex;justify-content:space-between"><span style="font-size:14px;font-weight:500">${t}</span>${prof?.toon_voorkeur===t?'<span style="color:var(--gold)">v</span>':''}</div>`).join('')}`);}
+async function saveToon(t){await sb.from('users').update({toon_voorkeur:t}).eq('webhook_key',prof.webhook_key);if(prof)prof.toon_voorkeur=t;refreshUI();closeMod();toast('Opgeslagen: '+t);}
 
 // CREDITS
-function buy(amount,price) { toast('Betaling komt binnenkort. Neem contact op.'); }
+function buy(amount,price){toast('Stripe koppeling komt binnenkort. Neem contact op.');}
 
-// NAV
-function go(name) {
+// NAVIGATIE
+function go(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.ni,.sl-item').forEach(n=>n.classList.remove('active'));
-  const scr=document.getElementById('screen-'+name); if(scr){scr.classList.add('active','sf');setTimeout(()=>scr.classList.remove('sf'),300);}
-  const ni=document.getElementById('nav-'+name); if(ni) ni.classList.add('active');
-  const sl=document.getElementById('sb-'+name); if(sl) sl.classList.add('active');
-  if (name==='history') loadHist();
-  if (name==='clients') loadClients();
-  if (name==='kennis'&&prof) document.getElementById('kennis-ta').value=prof.user_knowledge||'';
+  const scr=document.getElementById('screen-'+name);if(scr){scr.classList.add('active','sf');setTimeout(()=>scr.classList.remove('sf'),300);}
+  const ni=document.getElementById('nav-'+name);if(ni)ni.classList.add('active');
+  const sl=document.getElementById('sb-'+name);if(sl)sl.classList.add('active');
+  if(name==='history')loadHist();
+  if(name==='clients')loadClients();
+  if(name==='kennis'&&prof)document.getElementById('kennis-ta').value=prof.user_knowledge||'';
 }
 
 // HELPERS
-function setLdg(t) { document.getElementById('ldg-s').textContent=t; document.getElementById('ldg').classList.add('show'); }
-function hideLdg() { document.getElementById('ldg').classList.remove('show'); }
-function toast(m) { const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600); }
-function showMod(h) { document.getElementById('mbody').innerHTML=h; document.getElementById('moverlay').classList.add('show'); }
-function closeMod() { document.getElementById('moverlay').classList.remove('show'); }
+function setLdg(t){document.getElementById('ldg-s').textContent=t;document.getElementById('ldg').classList.add('show');}
+function hideLdg(){document.getElementById('ldg').classList.remove('show');}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function showMod(h){document.getElementById('mbody').innerHTML=h;document.getElementById('moverlay').classList.add('show');}
+function closeMod(){document.getElementById('moverlay').classList.remove('show');}
 
-// Enter key op toegangscode veld
-document.getElementById('login-code').addEventListener('keydown', e => { if(e.key==='Enter') doCodeLogin(); });
-document.getElementById('reg-email').addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
-
-// Desktop resize
-window.addEventListener('resize',()=>{ const d=window.innerWidth>=1024; if(prof) document.getElementById('sidebar').classList.toggle('on',d); });
+document.getElementById('login-code').addEventListener('keydown',e=>{if(e.key==='Enter')doCodeLogin();});
+document.getElementById('reg-email').addEventListener('keydown',e=>{if(e.key==='Enter')doRegister();});
+window.addEventListener('resize',()=>{const d=window.innerWidth>=1024;if(prof)document.getElementById('sidebar').classList.toggle('on',d);});
 </script>
 </body>
 </html>
