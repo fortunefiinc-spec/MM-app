@@ -533,7 +533,7 @@ async function doRegister() {
 
   if (error) {
     hideLdg();
-    msg.textContent = 'Fout bij aanmaken. Probeer opnieuw.';
+    msg.textContent = 'Fout: ' + (error.message || JSON.stringify(error));
     msg.className = 'auth-msg err';
     return;
   }
