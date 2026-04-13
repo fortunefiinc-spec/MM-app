@@ -230,26 +230,13 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
   <div class="auth-logo">Mail<em>Mate</em></div>
   <div class="auth-tagline">AI e-mail assistent in jouw stijl</div>
   <div class="auth-card">
-    <div class="auth-tabs">
-      <button class="at active" onclick="swTab('in')">Inloggen</button>
-      <button class="at" onclick="swTab('up')">Aanmelden</button>
-    </div>
-    <div id="tab-in">
-      <div class="fi"><label>E-mailadres</label><input type="email" id="in-email" placeholder="naam@bedrijf.nl" autocomplete="email"></div>
-      <div class="fi"><label>Wachtwoord</label><input type="password" id="in-pass" placeholder="Wachtwoord" autocomplete="current-password"></div>
-      <button class="btn-auth" onclick="doLogin()">Inloggen →</button>
-      <div class="auth-msg" id="in-msg"></div>
-      <div class="auth-switch">Nog geen account? <a onclick="swTab('up')">Aanmelden</a></div>
-    </div>
-    <div id="tab-up" style="display:none">
-      <div class="fi"><label>Je naam</label><input type="text" id="up-name" placeholder="Jan Jansen"></div>
-      <div class="fi"><label>E-mailadres</label><input type="email" id="up-email" placeholder="naam@bedrijf.nl"></div>
-      <div class="fi"><label>Wachtwoord</label><input type="password" id="up-pass" placeholder="Minimaal 8 tekens"></div>
-      <div class="fi"><label>Toegangscode</label><input type="text" id="up-code" placeholder="Ontvangen via e-mail"></div>
-      <button class="btn-auth" onclick="doReg()">Account aanmaken →</button>
-      <div class="auth-msg" id="up-msg"></div>
-      <div class="auth-switch">Al een account? <a onclick="swTab('in')">Inloggen</a></div>
-    </div>
+    <h2 style="font-family:var(--serif);font-size:22px;font-weight:400;color:var(--paper);margin-bottom:6px">Toegang</h2>
+    <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:22px;font-weight:300;line-height:1.6">Voer de toegangscode in die je via Telegram hebt ontvangen.</p>
+    <div class="fi"><label>Jouw naam</label><input type="text" id="auth-naam" placeholder="Jan Jansen" autocomplete="name"></div>
+    <div class="fi"><label>Toegangscode</label><input type="text" id="auth-code" placeholder="mailmate2025" autocomplete="off" style="letter-spacing:0.08em"></div>
+    <button class="btn-auth" onclick="doCodeLogin()">Toegang →</button>
+    <div class="auth-msg" id="auth-msg"></div>
+    <p style="font-size:11px;color:rgba(255,255,255,0.18);text-align:center;margin-top:14px;line-height:1.6">Geen toegangscode? Vraag toegang aan via <a href="https://mailmate.nl" target="_blank" style="color:var(--gold2)">mailmate.nl</a></p>
   </div>
 </div>
 
@@ -420,25 +407,71 @@ let user = null, prof = null, style = 'default', opts = {ab:false}, lastConcept 
 window.addEventListener('load', async () => {
   if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
   setLdg('Sessie controleren...');
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) { user = session.user; await initApp(); }
-  else hideLdg();
+
+
+  hideLdg();
 });
 
 async function initApp() {
   setLdg('Profiel laden...');
-  const { data } = await sb.from('users').select('*').eq('email', user.email).single();
-  prof = data;
-  showApp();
+  document.getElementById('screen-auth').classList.remove('active');
+  document.getElementById('main-wrap').style.display = 'flex';
+  if (window.innerWidth >= 1024) document.getElementById('sidebar').classList.add('on');
   hideLdg();
   refreshUI();
   loadHist(); loadClients();
 }
 
-function showApp() {
-  document.getElementById('screen-auth').classList.remove('active');
-  document.getElementById('main-wrap').style.display = 'flex';
-  if (window.innerWidth >= 1024) document.getElementById('sidebar').classList.add('on');
+// TOEGANGSCODE LOGIN
+async function doCodeLogin() {
+  const naam = document.getElementById('auth-naam').value.trim();
+  const code  = document.getElementById('auth-code').value.trim();
+  const msg   = document.getElementById('auth-msg');
+
+  if (!naam) { msg.textContent = 'Vul je naam in'; msg.className = 'auth-msg err'; return; }
+  if (!code)  { msg.textContent = 'Vul de toegangscode in'; msg.className = 'auth-msg err'; return; }
+
+  msg.textContent = 'Controleren...'; msg.className = 'auth-msg';
+  setLdg('Toegang controleren...');
+
+  // Optie 1: webhook_key als persoonlijke sleutel
+  const { data: byKey } = await sb.from('users').select('*').eq('webhook_key', code).single();
+  if (byKey && byKey.approved) {
+    prof = byKey;
+    await initApp();
+    return;
+  }
+
+  // Optie 2: algemene toegangscode — maak nieuw profiel aan of zoek op naam
+  if (code === CODE) {
+    // Zoek op naam
+    const { data: byName } = await sb.from('users').select('*').ilike('name', naam).single();
+    if (byName && byName.approved) {
+      prof = byName;
+      await initApp();
+      return;
+    }
+    // Nieuw profiel aanmaken — wacht op admin goedkeuring
+    hideLdg();
+    msg.textContent = 'Aanvraag ingediend. Je ontvangt een persoonlijke code zodra je bent goedgekeurd.';
+    msg.className = 'auth-msg ok';
+    return;
+  }
+
+  hideLdg();
+  msg.textContent = 'Onjuiste toegangscode';
+  msg.className = 'auth-msg err';
+}
+
+function doOut() {
+  prof = null;
+  document.getElementById('main-wrap').style.display = 'none';
+  document.getElementById('sidebar').classList.remove('on');
+  document.getElementById('screen-auth').classList.add('active');
+  document.getElementById('auth-naam').value = '';
+  document.getElementById('auth-code').value = '';
+  document.getElementById('auth-msg').textContent = '';
+  go('compose');
 }
 
 function refreshUI() {
@@ -448,7 +481,7 @@ function refreshUI() {
   document.getElementById('cr-big').textContent = cr;
   if (document.getElementById('sb-cr')) document.getElementById('sb-cr').textContent = cr;
   document.getElementById('av').textContent = (prof.name||user?.email||'U').charAt(0).toUpperCase();
-  document.getElementById('s-email').textContent = user?.email||'';
+  document.getElementById('s-email').textContent = prof?.name || '—';
   document.getElementById('s-vak').textContent = prof.vakgebied||'Niet ingesteld';
   document.getElementById('s-toon').textContent = prof.toon_voorkeur||'Niet ingesteld';
   document.getElementById('s-cr').textContent = cr + ' berichten resterend';
@@ -461,42 +494,7 @@ function refreshUI() {
   if (document.getElementById('wh-url')) { document.getElementById('wh-url').innerHTML = `<span class="hl">${wu}</span>`; document.getElementById('wh-key').innerHTML = `<span class="hl">${prof.webhook_key||'—'}</span>`; }
 }
 
-// AUTH
-function swTab(t) {
-  document.querySelectorAll('.at').forEach((b,i) => b.classList.toggle('active', (i===0&&t==='in')||(i===1&&t==='up')));
-  document.getElementById('tab-in').style.display = t==='in'?'block':'none';
-  document.getElementById('tab-up').style.display = t==='up'?'block':'none';
-}
-async function doLogin() {
-  const email = document.getElementById('in-email').value.trim();
-  const pass  = document.getElementById('in-pass').value;
-  const msg   = document.getElementById('in-msg');
-  if (!email||!pass) { msg.textContent='Vul alle velden in'; msg.className='auth-msg err'; return; }
-  msg.textContent='Inloggen...'; msg.className='auth-msg'; setLdg('Inloggen...');
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) { hideLdg(); msg.textContent='Onjuiste gegevens'; msg.className='auth-msg err'; return; }
-  user = data.user; await initApp();
-}
-async function doReg() {
-  const name=document.getElementById('up-name').value.trim(), email=document.getElementById('up-email').value.trim(), pass=document.getElementById('up-pass').value, code=document.getElementById('up-code').value.trim();
-  const msg=document.getElementById('up-msg');
-  if (!name||!email||!pass||!code) { msg.textContent='Vul alle velden in'; msg.className='auth-msg err'; return; }
-  if (code!==CODE) { msg.textContent='Onjuiste toegangscode'; msg.className='auth-msg err'; return; }
-  if (pass.length<8) { msg.textContent='Wachtwoord min. 8 tekens'; msg.className='auth-msg err'; return; }
-  msg.textContent='Account aanmaken...'; msg.className='auth-msg'; setLdg('Account aanmaken...');
-  const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { name } } });
-  if (error) { hideLdg(); msg.textContent=error.message; msg.className='auth-msg err'; return; }
-  user = data.user;
-  await sb.from('users').upsert({ telegram_id:0, name, credits:10, concept_count:0, style_profiles:JSON.stringify({default:''}), active_style:'default', user_knowledge:'', onboarded:false, approved:true, vakgebied:'', doel:'', toon_voorkeur:'', webhook_key:'wk_'+Math.random().toString(36).slice(2), email });
-  await initApp();
-}
-async function doOut() {
-  await sb.auth.signOut(); user=null; prof=null;
-  document.getElementById('main-wrap').style.display='none';
-  document.getElementById('sidebar').classList.remove('on');
-  document.getElementById('screen-auth').classList.add('active');
-  go('compose');
-}
+
 
 // COMPOSE
 function selStyle(n) { style=n; document.querySelectorAll('.sb').forEach(b => b.classList.toggle('active', b.dataset.s===n)); }
@@ -577,24 +575,24 @@ async function loadClients() {
 async function saveKennis() {
   const t=document.getElementById('kennis-ta').value; const btn=document.getElementById('btn-ks');
   btn.textContent='Opslaan...';
-  await sb.from('users').update({user_knowledge:t,updated_at:new Date().toISOString()}).eq('email',user.email);
+  await sb.from('users').update({user_knowledge:t,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key);
   if (prof) prof.user_knowledge=t;
   btn.textContent='Opgeslagen!'; btn.classList.add('saved'); setTimeout(()=>{btn.textContent='Opslaan';btn.classList.remove('saved');},2000);
 }
 
 // WEBHOOK
 function cpWebhook() { const u=API+'/mailhook/'+(prof?.telegram_id||0); navigator.clipboard.writeText('URL: '+u+'\nSleutel: '+(prof?.webhook_key||'')).then(()=>toast('Gekopieerd!')); }
-async function resetKey() { const k='wk_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); await sb.from('users').update({webhook_key:k,updated_at:new Date().toISOString()}).eq('email',user.email); if(prof)prof.webhook_key=k; refreshUI(); toast('Nieuwe sleutel aangemaakt!'); }
+async function resetKey() { const k='wk_'+Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2); await sb.from('users').update({webhook_key:k,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key); if(prof)prof.webhook_key=k; refreshUI(); toast('Nieuwe sleutel aangemaakt!'); }
 
 // SETTINGS
 function editVak() {
   showMod(`<h3>Vakgebied en doel</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Beschrijf wat jij doet</p><div style="margin-bottom:10px"><label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Vakgebied</label><input id="mv" value="${prof?.vakgebied||''}" placeholder="Bijv: Assurantiekantoor" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream)"></div><div style="margin-bottom:14px"><label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px">Doel</label><input id="md" value="${prof?.doel||''}" placeholder="Bijv: Klantadvies en polisbeheer" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream)"></div><button class="btn-go" onclick="saveVak()">Opslaan →</button>`);
 }
-async function saveVak() { const v=document.getElementById('mv').value.trim(),d=document.getElementById('md').value.trim(); await sb.from('users').update({vakgebied:v,doel:d,updated_at:new Date().toISOString()}).eq('email',user.email); if(prof){prof.vakgebied=v;prof.doel=d;} refreshUI(); closeMod(); toast('Opgeslagen!'); }
+async function saveVak() { const v=document.getElementById('mv').value.trim(),d=document.getElementById('md').value.trim(); await sb.from('users').update({vakgebied:v,doel:d,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key); if(prof){prof.vakgebied=v;prof.doel=d;} refreshUI(); closeMod(); toast('Opgeslagen!'); }
 function editToon() {
   showMod(`<h3>Toon voorkeur</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Hoe schrijf jij normaal?</p>${['Formeel (u)','Informeel (je)','Mix — hangt af van klant'].map(t=>`<div onclick="saveToon('${t}')" style="padding:13px;border:1px solid var(--border);margin-bottom:7px;cursor:pointer;background:${prof?.toon_voorkeur===t?'var(--gold-pale)':'var(--white)'};display:flex;justify-content:space-between"><span style="font-size:14px;font-weight:500">${t}</span>${prof?.toon_voorkeur===t?'<span style="color:var(--gold)">✓</span>':''}</div>`).join('')}`);
 }
-async function saveToon(t) { await sb.from('users').update({toon_voorkeur:t,updated_at:new Date().toISOString()}).eq('email',user.email); if(prof)prof.toon_voorkeur=t; refreshUI(); closeMod(); toast('Opgeslagen: '+t); }
+async function saveToon(t) { await sb.from('users').update({toon_voorkeur:t,updated_at:new Date().toISOString()}).eq('webhook_key', prof.webhook_key); if(prof)prof.toon_voorkeur=t; refreshUI(); closeMod(); toast('Opgeslagen: '+t); }
 function trainStyle() {
   if (!prof||prof.credits<3) { toast('Minimaal 3 berichten nodig'); return; }
   showMod(`<h3>Stijl trainen</h3><p style="font-size:13px;color:var(--muted);margin:6px 0 14px">Stuur 5+ eigen mails in, gescheiden door ——</p><input id="sn" placeholder="Naam voor stijl (bijv: formeel)" style="width:100%;padding:11px;border:1px solid var(--border);font-family:var(--sans);font-size:14px;background:var(--cream);margin-bottom:8px"><textarea id="sm" placeholder="E-mail 1...&#10;——&#10;E-mail 2..." style="width:100%;padding:12px;border:1px solid var(--border);font-family:var(--sans);font-size:13px;min-height:140px;resize:none;background:var(--cream);margin-bottom:12px"></textarea><div style="font-size:12px;color:var(--muted);margin-bottom:10px">Kost 3 berichten · Saldo: ${prof.credits}</div><button class="btn-go" id="btn-tr" onclick="doTrain()">Stijl trainen →</button>`);
@@ -634,12 +632,12 @@ function toast(m) { const t=document.getElementById('toast'); t.textContent=m; t
 function showMod(h) { document.getElementById('mbody').innerHTML=h; document.getElementById('moverlay').classList.add('show'); }
 function closeMod() { document.getElementById('moverlay').classList.remove('show'); }
 
-// Enter keys
-document.getElementById('in-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
-document.getElementById('in-email').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('in-pass').focus(); });
+// Enter key op toegangscode veld
+document.getElementById('auth-code').addEventListener('keydown', e => { if(e.key==='Enter') doCodeLogin(); });
+document.getElementById('auth-naam').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('auth-code').focus(); });
 
 // Desktop resize
-window.addEventListener('resize',()=>{ const d=window.innerWidth>=1024; if(user&&prof) document.getElementById('sidebar').classList.toggle('on',d); });
+window.addEventListener('resize',()=>{ const d=window.innerWidth>=1024; if(prof) document.getElementById('sidebar').classList.toggle('on',d); });
 </script>
 </body>
 </html>
