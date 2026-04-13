@@ -408,12 +408,43 @@ window.addEventListener('load', async () => {
   if (window.Telegram?.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
   setLdg('Sessie controleren...');
 
+  // Check magic link token in URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+  if (token) {
+    // Valideer token via Supabase
+    const { data } = await sb.from('users').select('*').eq('login_token', token).single();
+    if (data && data.approved) {
+      // Token geldig - verwijder uit URL
+      window.history.replaceState({}, '', window.location.pathname);
+      prof = data;
+      // Verwijder token na gebruik
+      await sb.from('users').update({ login_token: null }).eq('id', data.id);
+      await initApp();
+      return;
+    }
+  }
+
+  // Check opgeslagen sessie
+  const savedKey = sessionStorage.getItem('mm_key');
+  if (savedKey) {
+    const { data } = await sb.from('users').select('*').eq('webhook_key', savedKey).single();
+    if (data && data.approved) {
+      prof = data;
+      await initApp();
+      return;
+    } else {
+      sessionStorage.removeItem('mm_key');
+    }
+  }
 
   hideLdg();
 });
 
 async function initApp() {
   setLdg('Profiel laden...');
+  // Sla sessie op
+  if (prof && prof.webhook_key) sessionStorage.setItem('mm_key', prof.webhook_key);
   document.getElementById('screen-auth').classList.remove('active');
   document.getElementById('main-wrap').style.display = 'flex';
   if (window.innerWidth >= 1024) document.getElementById('sidebar').classList.add('on');
@@ -422,55 +453,126 @@ async function initApp() {
   loadHist(); loadClients();
 }
 
-// TOEGANGSCODE LOGIN
-async function doCodeLogin() {
-  const naam = document.getElementById('auth-naam').value.trim();
-  const code  = document.getElementById('auth-code').value.trim();
-  const msg   = document.getElementById('auth-msg');
+// AUTH TABS
+function swAuthTab(tab) {
+  document.getElementById('tab-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('tab-reg').style.display   = tab === 'reg'   ? 'block' : 'none';
+  document.getElementById('tab-btn-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-btn-reg').classList.toggle('active', tab === 'reg');
+}
 
-  if (!naam) { msg.textContent = 'Vul je naam in'; msg.className = 'auth-msg err'; return; }
-  if (!code)  { msg.textContent = 'Vul de toegangscode in'; msg.className = 'auth-msg err'; return; }
-
+// MAGIC LINK LOGIN
+async function doMagicLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const msg = document.getElementById('login-msg');
+  if (!email) { msg.textContent = 'Vul je e-mailadres in'; msg.className = 'auth-msg err'; return; }
   msg.textContent = 'Controleren...'; msg.className = 'auth-msg';
-  setLdg('Toegang controleren...');
+  setLdg('E-mailadres controleren...');
 
-  // Optie 1: webhook_key als persoonlijke sleutel
-  const { data: byKey } = await sb.from('users').select('*').eq('webhook_key', code).single();
-  if (byKey && byKey.approved) {
-    prof = byKey;
-    await initApp();
-    return;
-  }
-
-  // Optie 2: algemene toegangscode — maak nieuw profiel aan of zoek op naam
-  if (code === CODE) {
-    // Zoek op naam
-    const { data: byName } = await sb.from('users').select('*').ilike('name', naam).single();
-    if (byName && byName.approved) {
-      prof = byName;
-      await initApp();
-      return;
-    }
-    // Nieuw profiel aanmaken — wacht op admin goedkeuring
+  // Zoek gebruiker op e-mail
+  const { data: u } = await sb.from('users').select('*').eq('email', email).single();
+  if (!u) {
     hideLdg();
-    msg.textContent = 'Aanvraag ingediend. Je ontvangt een persoonlijke code zodra je bent goedgekeurd.';
-    msg.className = 'auth-msg ok';
+    msg.textContent = 'Geen account gevonden. Maak eerst een account aan.';
+    msg.className = 'auth-msg err';
     return;
   }
+  if (!u.approved) {
+    hideLdg();
+    msg.textContent = 'Je account wacht nog op goedkeuring. Je ontvangt een e-mail zodra je toegang hebt.';
+    msg.className = 'auth-msg err';
+    return;
+  }
+
+  // Genereer login token
+  const token = 'lt_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  await sb.from('users').update({ login_token: token }).eq('email', email);
+
+  // Stuur magic link via Railway API
+  try {
+    await fetch(API + '/api/send-login-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, token: token, name: u.name })
+    });
+    hideLdg();
+    msg.textContent = 'Inloglink verstuurd naar ' + email + '. Controleer je inbox.';
+    msg.className = 'auth-msg ok';
+  } catch(e) {
+    // Fallback: directe inlog met webhook_key
+    hideLdg();
+    prof = u;
+    await initApp();
+  }
+}
+
+// REGISTREREN
+async function doRegister() {
+  const naam   = document.getElementById('reg-naam').value.trim();
+  const email  = document.getElementById('reg-email').value.trim();
+  const beroep = document.getElementById('reg-beroep').value.trim();
+  const msg    = document.getElementById('reg-msg');
+
+  if (!naam || !email) { msg.textContent = 'Vul naam en e-mailadres in'; msg.className = 'auth-msg err'; return; }
+  msg.textContent = 'Aanvraag indienen...'; msg.className = 'auth-msg';
+  setLdg('Aanvraag verwerken...');
+
+  // Check of e-mail al bestaat
+  const { data: existing } = await sb.from('users').select('id').eq('email', email).single();
+  if (existing) {
+    hideLdg();
+    msg.textContent = 'Dit e-mailadres is al geregistreerd. Gebruik de inlogknop.';
+    msg.className = 'auth-msg err';
+    swAuthTab('login');
+    return;
+  }
+
+  // Nieuw profiel aanmaken
+  const webhookKey = 'mm_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+  const { error } = await sb.from('users').insert({
+    telegram_id: 0,
+    name: naam,
+    email: email,
+    credits: 0,
+    concept_count: 0,
+    style_profiles: JSON.stringify({ default: '' }),
+    active_style: 'default',
+    user_knowledge: '',
+    onboarded: false,
+    approved: false,
+    vakgebied: beroep || '',
+    doel: '',
+    toon_voorkeur: '',
+    webhook_key: webhookKey
+  });
+
+  if (error) {
+    hideLdg();
+    msg.textContent = 'Fout bij aanmaken. Probeer opnieuw.';
+    msg.className = 'auth-msg err';
+    return;
+  }
+
+  // Notificeer admin via Railway
+  try {
+    await fetch(API + '/api/notify-admin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ naam, email, beroep })
+    });
+  } catch(e) { /* stil falen */ }
 
   hideLdg();
-  msg.textContent = 'Onjuiste toegangscode';
-  msg.className = 'auth-msg err';
+  msg.textContent = 'Aanvraag ingediend! Je ontvangt een e-mail zodra je toegang hebt. Dit duurt maximaal 1 werkdag.';
+  msg.className = 'auth-msg ok';
 }
 
 function doOut() {
+  sessionStorage.removeItem('mm_key');
   prof = null;
   document.getElementById('main-wrap').style.display = 'none';
   document.getElementById('sidebar').classList.remove('on');
   document.getElementById('screen-auth').classList.add('active');
-  document.getElementById('auth-naam').value = '';
-  document.getElementById('auth-code').value = '';
-  document.getElementById('auth-msg').textContent = '';
   go('compose');
 }
 
