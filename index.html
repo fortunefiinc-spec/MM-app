@@ -230,13 +230,29 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
   <div class="auth-logo">Mail<em>Mate</em></div>
   <div class="auth-tagline">AI e-mail assistent in jouw stijl</div>
   <div class="auth-card">
-    <h2 style="font-family:var(--serif);font-size:22px;font-weight:400;color:var(--paper);margin-bottom:6px">Toegang</h2>
-    <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:22px;font-weight:300;line-height:1.6">Voer de toegangscode in die je via Telegram hebt ontvangen.</p>
-    <div class="fi"><label>Jouw naam</label><input type="text" id="auth-naam" placeholder="Jan Jansen" autocomplete="name"></div>
-    <div class="fi"><label>Toegangscode</label><input type="text" id="auth-code" placeholder="mailmate2025" autocomplete="off" style="letter-spacing:0.08em"></div>
-    <button class="btn-auth" onclick="doCodeLogin()">Toegang →</button>
-    <div class="auth-msg" id="auth-msg"></div>
-    <p style="font-size:11px;color:rgba(255,255,255,0.18);text-align:center;margin-top:14px;line-height:1.6">Geen toegangscode? Vraag toegang aan via <a href="https://mailmate.nl" target="_blank" style="color:var(--gold2)">mailmate.nl</a></p>
+    <div class="auth-tabs">
+      <button class="at active" id="tab-btn-login" onclick="swAuthTab('login')">Inloggen</button>
+      <button class="at" id="tab-btn-reg" onclick="swAuthTab('reg')">Aanmelden</button>
+    </div>
+
+    <!-- INLOGGEN MET CODE -->
+    <div id="tab-login">
+      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:20px;font-weight:300;line-height:1.65">Voer je persoonlijke toegangscode in. Je hebt deze ontvangen na goedkeuring.</p>
+      <div class="fi"><label>Toegangscode</label><input type="text" id="login-code" placeholder="mm_xxxxxxxxxxxx" autocomplete="off" style="letter-spacing:0.04em"></div>
+      <button class="btn-auth" onclick="doCodeLogin()">Inloggen &rarr;</button>
+      <div class="auth-msg" id="login-msg"></div>
+      <p style="font-size:11px;color:rgba(255,255,255,0.15);text-align:center;margin-top:12px">Nog geen account? Klik op Aanmelden.</p>
+    </div>
+
+    <!-- AANMELDEN -->
+    <div id="tab-reg" style="display:none">
+      <p style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:20px;font-weight:300;line-height:1.65">Maak een account aan. Je ontvangt je toegangscode zodra je aanvraag is goedgekeurd.</p>
+      <div class="fi"><label>Je naam</label><input type="text" id="reg-naam" placeholder="Jan Jansen" autocomplete="name"></div>
+      <div class="fi"><label>E-mailadres</label><input type="email" id="reg-email" placeholder="naam@bedrijf.nl" autocomplete="email"></div>
+      <div class="fi"><label>Je beroep of bedrijf</label><input type="text" id="reg-beroep" placeholder="Bijv: Assurantiekantoor"></div>
+      <button class="btn-auth" onclick="doRegister()">Aanvraag indienen &rarr;</button>
+      <div class="auth-msg" id="reg-msg"></div>
+    </div>
   </div>
 </div>
 
@@ -461,49 +477,18 @@ function swAuthTab(tab) {
   document.getElementById('tab-btn-reg').classList.toggle('active', tab === 'reg');
 }
 
-// MAGIC LINK LOGIN
-async function doMagicLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const msg = document.getElementById('login-msg');
-  if (!email) { msg.textContent = 'Vul je e-mailadres in'; msg.className = 'auth-msg err'; return; }
+// INLOGGEN MET CODE
+async function doCodeLogin() {
+  const code = document.getElementById('login-code').value.trim();
+  const msg  = document.getElementById('login-msg');
+  if (!code) { msg.textContent = 'Vul je toegangscode in'; msg.className = 'auth-msg err'; return; }
   msg.textContent = 'Controleren...'; msg.className = 'auth-msg';
-  setLdg('E-mailadres controleren...');
-
-  // Zoek gebruiker op e-mail
-  const { data: u } = await sb.from('users').select('*').eq('email', email).single();
-  if (!u) {
-    hideLdg();
-    msg.textContent = 'Geen account gevonden. Maak eerst een account aan.';
-    msg.className = 'auth-msg err';
-    return;
-  }
-  if (!u.approved) {
-    hideLdg();
-    msg.textContent = 'Je account wacht nog op goedkeuring. Je ontvangt een e-mail zodra je toegang hebt.';
-    msg.className = 'auth-msg err';
-    return;
-  }
-
-  // Genereer login token
-  const token = 'lt_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
-  await sb.from('users').update({ login_token: token }).eq('email', email);
-
-  // Stuur magic link via Railway API
-  try {
-    await fetch(API + '/api/send-login-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email, token: token, name: u.name })
-    });
-    hideLdg();
-    msg.textContent = 'Inloglink verstuurd naar ' + email + '. Controleer je inbox.';
-    msg.className = 'auth-msg ok';
-  } catch(e) {
-    // Fallback: directe inlog met webhook_key
-    hideLdg();
-    prof = u;
-    await initApp();
-  }
+  setLdg('Toegang controleren...');
+  const { data } = await sb.from('users').select('*').eq('webhook_key', code).single();
+  if (data && data.approved) { prof = data; await initApp(); return; }
+  hideLdg();
+  msg.textContent = data && !data.approved ? 'Je account wacht nog op goedkeuring.' : 'Onjuiste toegangscode.';
+  msg.className = 'auth-msg err';
 }
 
 // REGISTREREN
@@ -735,8 +720,8 @@ function showMod(h) { document.getElementById('mbody').innerHTML=h; document.get
 function closeMod() { document.getElementById('moverlay').classList.remove('show'); }
 
 // Enter key op toegangscode veld
-document.getElementById('auth-code').addEventListener('keydown', e => { if(e.key==='Enter') doCodeLogin(); });
-document.getElementById('auth-naam').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('auth-code').focus(); });
+document.getElementById('login-code').addEventListener('keydown', e => { if(e.key==='Enter') doCodeLogin(); });
+document.getElementById('reg-email').addEventListener('keydown', e => { if(e.key==='Enter') doRegister(); });
 
 // Desktop resize
 window.addEventListener('resize',()=>{ const d=window.innerWidth>=1024; if(prof) document.getElementById('sidebar').classList.toggle('on',d); });
