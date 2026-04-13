@@ -540,12 +540,24 @@ async function doRegister() {
 
   // Notificeer admin via Railway
   try {
-    await fetch(API + '/api/notify-admin', {
+    const notifyRes = await fetch(API + '/api/notify-admin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ naam, email, beroep })
     });
-  } catch(e) { /* stil falen */ }
+    const notifyData = await notifyRes.json();
+    if (!notifyData.success) {
+      msg.textContent = 'Aanvraag opgeslagen maar notificatie mislukt: ' + JSON.stringify(notifyData);
+      msg.className = 'auth-msg err';
+      hideLdg();
+      return;
+    }
+  } catch(e) {
+    msg.textContent = 'Aanvraag opgeslagen maar notificatie mislukt: ' + e.message;
+    msg.className = 'auth-msg err';
+    hideLdg();
+    return;
+  }
 
   hideLdg();
   msg.textContent = 'Aanvraag ingediend! Je ontvangt een e-mail zodra je toegang hebt. Dit duurt maximaal 1 werkdag.';
